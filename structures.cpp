@@ -1,23 +1,23 @@
 #include <iostream>
 using namespace std;
 
-struct Jeton {
-    int idCouleur; // joueur 1 : idCouleur = 1 ( = X = noir) ; joueur 2 : idCouleur = 2 ( = O = blanc) ; joueur 0 : idCouleur = 0 ( = vide = vide) ;
+/* --------------- STRUCTURES ---------------- */ 
+
+typedef struct  {
+    int idJoueur;
     int ligne;
     int colonne;
-    struct Jeton *next;    
-} ;
+} Jeton;
 
-struct Joueur {
-    char name[30];
-    int nbJetons; // nb de jetons actuels
-    Jeton listeJetons;
+typedef struct  {
+    char nom[30];
+    int idJoueur;
+    int nbJetons;
+} Joueur;
 
-    int id;
-} ;
-
-struct Jeu {
+typedef struct  {
     Joueur joueur1;
     Joueur joueur2;
-    Jeton *grille[8][8];
-} ;
+    
+    Jeton* tab[8][8];
+}Jeu;
