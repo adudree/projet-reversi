@@ -1,40 +1,51 @@
 #include <iostream>
 //#include <string>
-#include "structures.cpp" 
+#include "structures.cpp"
+#include <windows.h> // pour afficher les caractères spéciaux UTF-8 dans le terminal Windows
+
 using namespace std;
+
+
+
+
+/* =================== FONCTIONS QUI SERONT UTILISÉES DANS LE JEU ================== */
+
 
 
 /* ------------- Initialisation ------------- */
 
-void initJoueur(Joueur * joueur) {
+// Caractérisation du joueur :
+void initJoueur(Joueur *joueur){
     cout << "Nom du joueur " << joueur->idJoueur << " : " ;
     cin >> joueur->nom;
     joueur->nbJetons = 0;
 }
 
-void initJeu(Jeu *jeu, Joueur j1, Joueur j2) {
+void initJeu(Jeu *jeu, Joueur j1, Joueur j2){
     jeu->joueur1 = j1;
     jeu->joueur2 = j2;
 }
 
-void initJeton(Jeton * jeton, int id, int col, int lig){
+void initJeton(Jeton *jeton, int id, int col, int lig){
     jeton->idJoueur = id;
     jeton->colonne = col;
     jeton->ligne = lig;
 }
 
+
+
 /* -------------- Affichage -------------- */
 
 // affichage du jeton en fonction du joueur 
 void displayJeton(Jeton jeton){   
-    if (jeton.idJoueur == 0) {
+    if (jeton.idJoueur == 0) { // Le joueur 0 sert à placer des jetons "vides"
         cout << " |    ";
     }
     else if (jeton.idJoueur == 1) {
-        cout << " |  X " ;
+        cout << " |  X " ;  // X = noir = joueur 1
     }
     else if (jeton.idJoueur == 2) {
-        cout << " |  O ";
+        cout << " |  O "; // O = blanc = joueur 2
     }
     // fin de ligne 
     if (jeton.colonne==7) {
@@ -54,7 +65,7 @@ void printLine() {
     }
 }
 
-// affichage de la grille 8x8
+// affichage de la grille 8*8
 void afficheGrille(Jeu my_jeu) {
     // en-tête des colonnes 
     for (char colonne='A';colonne <='H';colonne++) {  
@@ -87,6 +98,7 @@ void afficheGrille(Jeu my_jeu) {
 }
 
 
+
 /* ---------- Infos joueur courant -------- */
 
 // compteur de jetons par joueur
@@ -105,7 +117,10 @@ int countJeton(Jeu jeu, Joueur joueur) {
 
 // affichage joueur courant 
 void displayCurrentJoueur(Jeu jeu, Joueur joueur) {
-    cout << "\nJoueur en cours : " << joueur.nom << " | Nombre de jetons : " << countJeton(jeu, joueur) << endl << endl;
+    cout << "\nC'est au tour de " << joueur.nom << ". | Nombre de jetons de " << joueur.nom << " (" ;
+    if(joueur.idJoueur == 1){cout << "X" ;}
+    else if(joueur.idJoueur == 2){cout << "O" ;}
+    cout << ") actuellement sur la grille : " << countJeton(jeu, joueur) << "." << endl << endl;
 }
 
 // convertir les char en int (pour les coordonnées)
@@ -143,18 +158,11 @@ int charToInt(char charToConvert) {
 
 // récupération de l'id de l'autre joueur 
 int otherJoueur(int currentJoueur) {
-    int otherid;
-    if (currentJoueur = 1) {
-        otherid = 2;
-    }
-    else {
-        otherid = 1;
-    }
-    return otherid;
+    return currentJoueur % 2 + 1;
 } 
 
 // changement de joueur courant 
-Joueur * alterneJoueur(Joueur * currentJoueur, Joueur * joueur1, Joueur * joueur2) {
+Joueur *alterneJoueur(Joueur *currentJoueur, Joueur *joueur1, Joueur *joueur2){
     if (currentJoueur == joueur1) {
         currentJoueur = joueur2;
     }
@@ -164,24 +172,26 @@ Joueur * alterneJoueur(Joueur * currentJoueur, Joueur * joueur1, Joueur * joueur
     return currentJoueur;
 }
 
-// demander la case à jouer 
-string askCase(Jeu * my_jeu, Joueur currentJoueur) {
-    cout << "Quelle case voulez-vous jouer ? [Format Colonne Ligne, ex : A1] "; 
+// demander la case sur laquelle placer un pion
+string askCase(Jeu *my_jeu, Joueur currentJoueur){
+    cout << "Sur quelle case voulez-vous placer un pion ? (Format : COLONNE Ligne ; ex. : A1) "; 
     string caseToPlay;
     cin >> caseToPlay;
 
     return caseToPlay;
 }
 
+
+
 /* ----------------- Jetons ----------------- */
 
 //ajout d'un jeton au tableau 
-void addJeton(Jeu * jeu, Jeton * jeton) { 
+void addJeton(Jeu *jeu, Jeton *jeton) { 
     jeu->tab[jeton->colonne-1][jeton->ligne-1] = jeton; 
 }
 
 // vérification des conditions de placement de jeton 
-bool emplacementOk(Jeu my_jeu, Jeton jetonToCreate, Joueur * currentJoueur) {
+bool emplacementOk(Jeu my_jeu, Jeton jetonToCreate, Joueur *currentJoueur) {
     bool isOk = true; 
 
     // décalage de 1 dû au décalage d'indice dans la grille
@@ -195,7 +205,7 @@ bool emplacementOk(Jeu my_jeu, Jeton jetonToCreate, Joueur * currentJoueur) {
         cout << "La case est libre." << endl;
         isOk = true; 
        
-        // on vérifie que les cases à proximité contiennent un jeton, et que ce jeton est de couleur adverse
+        // on vérifie que les cases à proximité (nord, sud, est, ouest, ou  diagonales) contiennent un jeton, et que ce jeton est de couleur adverse
         if (
             (my_jeu.tab[trueColonne + 1][trueLigne + 1] && my_jeu.tab[trueColonne + 1][trueLigne + 1]->idJoueur == otherid) ||
             (my_jeu.tab[trueColonne + 1][trueLigne] && my_jeu.tab[trueColonne + 1][trueLigne]->idJoueur == otherid) ||            
@@ -206,55 +216,67 @@ bool emplacementOk(Jeu my_jeu, Jeton jetonToCreate, Joueur * currentJoueur) {
             (my_jeu.tab[trueColonne - 1][trueLigne] && my_jeu.tab[trueColonne - 1][trueLigne]->idJoueur == otherid) ||
             (my_jeu.tab[trueColonne - 1][trueLigne - 1] && my_jeu.tab[trueColonne - 1][trueLigne - 1]->idJoueur == otherid)            
         ){
-            cout << "Il y a un jeton adverse a proximite." << endl;
+            #ifdef WIN32
+	        SetConsoleOutputCP(65001);
+            #endif
+            cout << "Il y a un jeton adverse à proximité." << endl;
             isOk = true; 
         }
 
-        // si pas de jeton de l'adversaire à proximité 
+        // s'il n'y a pas de jeton adverse à proximité
         else {
-            cout << "coup impossible" << endl;
+            cout << "Coup impossible." << endl;
             isOk = false;
         }
     }
 
-    // si la case a déjà un jeton 
+    // si la case contient déjà un jeton
     else {
-        cout << "La case est prise." << endl;
+        #ifdef WIN32
+	        SetConsoleOutputCP(65001);
+        #endif
+        cout << "La case est déjà prise." << endl;
         isOk = false;
     }
 
     return isOk;
 }
 
-/* =================== PROGRAMME ================== */
-/* ----- variables ----- */
 
+
+
+
+
+/* =================== JEU ================== */
+
+
+
+/* ----- Déclaration des variables ----- */
 Joueur joueur1;
 Joueur joueur2;
 Joueur noJoueur;
 Jeu my_jeu;
 Joueur * currentJoueur;
 
+
 int main() {
 
-    /* ------- Initialisation joueurs ----- */    
-    
+    /* ---------- PRÉPARATION DU JEU ---------- */
+
+    /* ------- Initialisation des joueurs ----- */    
     joueur1.idJoueur=1;
     joueur2.idJoueur=2;
     initJoueur(&joueur1);
     initJoueur(&joueur2);
-   
     noJoueur.idJoueur = 0;
 
-    /* --------- Initialisation jeu ------- */    
-
+    /* --------- Initialisation du jeu ------- */
     initJeu(&my_jeu, joueur1, joueur2);
 
-    /* -- Initialisation joueur courant  -- */
+    /* -- Initialisation du joueur courant  -- */
     currentJoueur = &joueur1;
 
-    /* -- Initialisation premiers jetons -- */
-   
+    /* -- Initialisation des premiers jetons -- */
     Jeton debut1;
     Jeton debut2;
     Jeton debut3;
@@ -271,37 +293,62 @@ int main() {
     addJeton(&my_jeu, &debut2);
     addJeton(&my_jeu, &debut3);
     addJeton(&my_jeu, &debut4);
+    joueur1.nbJetons = joueur2.nbJetons = 2; // on màj le nb de jetons des joueurs
 
     /* ---------- Affichage de la grille -------- */
     afficheGrille(my_jeu);
 
-    /* ================= DEBUT DU JEU ================ */
 
-    // affichage infos joueur courant 
-    displayCurrentJoueur(my_jeu, *currentJoueur); 
-    
-    // Demande d'un jeton  
-    string caseToPlay = askCase(&my_jeu, *currentJoueur); 
+    /* ---------- DÉBUT DU JEU ---------- */
 
-    // récupération des coordonnées demandées + conversion des char en int
-    int ligneToPlay = atoi(&caseToPlay[1]);
-    int colonneToPlay = charToInt(caseToPlay[0]);
+    while(joueur1.nbJetons + joueur2.nbJetons != 64 && joueur1.nbJetons !=0 && joueur2.nbJetons != 0){ // Tant que la grille n'est pas remplie et que les 2 joueurs ont encore des pions sur la grille, on continue de jouer
 
-    // création et initialisation du jeton entré par le joueur
-    Jeton jetonToCreate; 
-    initJeton(&jetonToCreate, currentJoueur->idJoueur, colonneToPlay, ligneToPlay);
+        // [old] debut: // label pour le goto utilisé plus bas, permettant de faire rejouer
 
-    // si les conditions sont réunies, on le place dans la grille. 
-    if (emplacementOk(my_jeu, jetonToCreate, currentJoueur)) {
-        cout << "Le jeton peut etre joue." << endl;
-        addJeton(&my_jeu, &jetonToCreate); 
+
+        // affichage infos joueur courant 
+        displayCurrentJoueur(my_jeu, *currentJoueur); 
+        
+        // Demande d'un jeton  
+        string caseToPlay = askCase(&my_jeu, *currentJoueur); 
+
+        // récupération des coordonnées demandées + conversion des char en int
+        int ligneToPlay = atoi(&caseToPlay[1]);
+        int colonneToPlay = charToInt(caseToPlay[0]);
+
+        // création et initialisation du jeton entré par le joueur
+        Jeton jetonToCreate; 
+        initJeton(&jetonToCreate, currentJoueur->idJoueur, colonneToPlay, ligneToPlay);
+
+        // si les conditions sont réunies, on le place dans la grille
+        if(emplacementOk(my_jeu, jetonToCreate, currentJoueur)){
+            #ifdef WIN32
+                SetConsoleOutputCP(65001);
+            #endif
+            cout << "Le jeton peut donc être joué." << endl;
+            addJeton(&my_jeu, &jetonToCreate); 
+        }
+
+        // A FAIRE : SINON, ON REJOUE :
+        /* [old]
+        else{
+            goto debut;
+        }
+        */
+
+        // on affiche de nouveau la grille pour vérifier 
+        afficheGrille(my_jeu);
+
+        // changement de joueur 
+        currentJoueur = alterneJoueur(currentJoueur, &joueur1, &joueur2);
+
     }
 
-    /* A FAIRE : SINON, ON REJOUE */ 
-
-    // on affiche de nouveau la grille pour vérifier 
-    afficheGrille(my_jeu);
-
-    // changement de joueur 
-    currentJoueur = alterneJoueur(currentJoueur, &joueur1, &joueur2);
+    // Annonce du vainqueur de la partie
+    if(joueur1.nbJetons > joueur2.nbJetons){
+        cout << joueur1.nom << " a gagné !" << endl;
+    }
+    else{
+        cout << joueur2.nom << " a gagné !" << endl;
+    }
 }

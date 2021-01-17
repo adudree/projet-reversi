@@ -3,21 +3,21 @@ using namespace std;
 
 /* --------------- STRUCTURES ---------------- */ 
 
-typedef struct  {
-    int idJoueur;
-    int ligne;
-    int colonne;
-} Jeton;
+struct Jeton {
+    int idJoueur; // joueur 1 : idJoueur = 1 ( = X = noir) ; joueur 2 : idJoueur = 2 ( = O = blanc) ; joueur 0 : idJoueur = 0 ( = vide = vide) ;
+    int ligne; // coordonnée de ligne
+    int colonne; // coordonnée de colonne
+} ;
 
-typedef struct  {
+struct Joueur {
     char nom[30];
     int idJoueur;
-    int nbJetons;
-} Joueur;
+    int nbJetons; // nb de jetons que ce joueur a actuellement de placés sur la grille
+} ;
 
-typedef struct  {
+struct Jeu {
     Joueur joueur1;
     Joueur joueur2;
     
-    Jeton* tab[8][8];
-}Jeu;
+    Jeton *tab[8][8];
+} ;
