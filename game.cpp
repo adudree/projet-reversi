@@ -498,9 +498,9 @@ bool verifEncadrement(string direction, Jeu my_jeu, Jeton jetonToCreate, Joueur 
 }
 [old fin] */
 
-// vérification des conditions de placement de jeton
+// vérifier si la case est libre et voisine d'un jeton adverse 
 bool emplacementOk(Jeu my_jeu, Jeton jetonToCreate, Joueur *currentJoueur) {
-    bool isOk = true;
+    bool isOk = false; 
 
     // décalage de 1 dû au décalage d'indice dans la grille
     int trueColonne = jetonToCreate.colonne - 1;
@@ -508,103 +508,40 @@ bool emplacementOk(Jeu my_jeu, Jeton jetonToCreate, Joueur *currentJoueur) {
 
     int otherid = otherJoueur(currentJoueur->idJoueur);
 
-    // on vérifie si la case est libre
+    // on vérifie si la case est libre 
     if (my_jeu.tab[trueColonne][trueLigne] == NULL) {
-        cout << "La case est libre." << endl;
-        isOk = true;
-
-        // on vérifie que les cases à proximité (nord, sud, est, ouest, ou  diagonales) contiennent un jeton, et que ce jeton est de couleur adverse
-        if (                                                                                                                   // Directions (pts cardinaux) :
-            (my_jeu.tab[trueColonne + 1][trueLigne + 1] && my_jeu.tab[trueColonne + 1][trueLigne + 1]->idJoueur == otherid) || // S-E
-            (my_jeu.tab[trueColonne + 1][trueLigne] && my_jeu.tab[trueColonne + 1][trueLigne]->idJoueur == otherid) ||         // E
-            (my_jeu.tab[trueColonne + 1][trueLigne - 1] && my_jeu.tab[trueColonne + 1][trueLigne - 1]->idJoueur == otherid) || // N-E
-            (my_jeu.tab[trueColonne][trueLigne + 1] && my_jeu.tab[trueColonne][trueLigne + 1]->idJoueur == otherid) ||         // S
-            (my_jeu.tab[trueColonne][trueLigne - 1] && my_jeu.tab[trueColonne][trueLigne - 1]->idJoueur == otherid) ||         // N
-            (my_jeu.tab[trueColonne - 1][trueLigne + 1] && my_jeu.tab[trueColonne - 1][trueLigne + 1]->idJoueur == otherid) || // S-O
-            (my_jeu.tab[trueColonne - 1][trueLigne] && my_jeu.tab[trueColonne - 1][trueLigne]->idJoueur == otherid) ||         // O
-            (my_jeu.tab[trueColonne - 1][trueLigne - 1] && my_jeu.tab[trueColonne - 1][trueLigne - 1]->idJoueur == otherid)    // N-O
-        ){
-            #ifdef WIN32
-	        SetConsoleOutputCP(65001);
-            #endif
-            cout << "Il y a un jeton adverse à proximité." << endl;
-            isOk = true;
-        }
-
-        // s'il n'y a pas de jeton adverse à proximité
-        else {
-            cout << "Coup impossible." << endl;
-            isOk = false;
-        }
-
-        // on vérifie que le nouveau jeton encadre un ou plusieurs jetons adverses avec un autre pion du joueur courant déjà placé
-        /* [old] if((my_jeu.tab[trueColonne + 1][trueLigne + 1]->idJoueur == otherid)){ // S-E
-            for (int i = trueLigne + 2 ; i < 9 ; i++){ // on parcourt les lignes
-                for(int j = trueColonne + 2 ; j < 9 ; j++){
-                    if (my_jeu.tab[j][i]->idJoueur == currentJoueur->idJoueur){
-                        isOk = true ;
-                    }
-
-                }
+        
+        //gestion des extrémités du tableau
+         if ((trueColonne + 1 < 8) && (trueColonne - 1 >= 0) && (trueLigne + 1 <8) && (trueLigne - 1 >=0)) {
+            // on vérifie que les cases à proximité (nord, sud, est, ouest, ou  diagonales) contiennent un jeton, et que ce jeton est de couleur adverse
+            if (
+                (my_jeu.tab[trueColonne + 1][trueLigne + 1] && my_jeu.tab[trueColonne + 1][trueLigne + 1]->idJoueur == otherid) ||  // SE
+                (my_jeu.tab[trueColonne + 1][trueLigne] && my_jeu.tab[trueColonne + 1][trueLigne]->idJoueur == otherid) ||          // E   
+                (my_jeu.tab[trueColonne + 1][trueLigne - 1] && my_jeu.tab[trueColonne + 1][trueLigne - 1]->idJoueur == otherid) ||  // NE
+                (my_jeu.tab[trueColonne][trueLigne + 1] && my_jeu.tab[trueColonne][trueLigne + 1]->idJoueur == otherid) ||          // S 
+                (my_jeu.tab[trueColonne][trueLigne - 1] && my_jeu.tab[trueColonne][trueLigne - 1]->idJoueur == otherid) ||          // N
+                (my_jeu.tab[trueColonne - 1][trueLigne + 1] && my_jeu.tab[trueColonne - 1][trueLigne + 1]->idJoueur == otherid) ||  // SO          
+                (my_jeu.tab[trueColonne - 1][trueLigne] && my_jeu.tab[trueColonne - 1][trueLigne]->idJoueur == otherid) ||          // O
+                (my_jeu.tab[trueColonne - 1][trueLigne - 1] && my_jeu.tab[trueColonne - 1][trueLigne - 1]->idJoueur == otherid)     // NO   
+            ){
+                isOk = true; 
             }
-        }
-        else if((my_jeu.tab[trueColonne + 1][trueLigne]->idJoueur == otherid)){ // E
-
-        }
-        else if((my_jeu.tab[trueColonne + 1][trueLigne - 1]->idJoueur == otherid)){ // N-E
-
-        }
-        else if((my_jeu.tab[trueColonne][trueLigne + 1]->idJoueur == otherid)){ // S
-
-        }
-        else if((my_jeu.tab[trueColonne][trueLigne - 1]->idJoueur == otherid)){ // N
-
-        }
-        else if((my_jeu.tab[trueColonne - 1][trueLigne + 1]->idJoueur == otherid)){ // S-O
-
-        }
-        else if((my_jeu.tab[trueColonne - 1][trueLigne]->idJoueur == otherid)){ // O
-
-        }
-        else if((my_jeu.tab[trueColonne - 1][trueLigne - 1]->idJoueur == otherid)){ // N-O
-
-        }
-        fin du [old] */
-
-
+         }
     }
-
-    // si la case contient déjà un jeton
-    else {
-        #ifdef WIN32
-	        SetConsoleOutputCP(65001);
-        #endif
-        cout << "La case est déjà prise." << endl;
-        isOk = false;
-    }
-
-    /* [old début]
-    // Si la case ne permet pas d'encadrer un ou plusieurs pions adverses
-    if ((verifEncadrement("SE", my_jeu, jetonToCreate, &currentJoueur) == false) &&
-        (verifEncadrement("E", my_jeu, jetonToCreate, &currentJoueur) == false) &&
-        (verifEncadrement("NE", my_jeu, jetonToCreate, &currentJoueur) == false) &&
-        (verifEncadrement("S", my_jeu, jetonToCreate, &currentJoueur) == false) &&
-        (verifEncadrement("N", my_jeu, jetonToCreate, &currentJoueur) == false) &&
-        (verifEncadrement("SO", my_jeu, jetonToCreate, &currentJoueur) == false) &&
-        (verifEncadrement("O", my_jeu, jetonToCreate, &currentJoueur) == false) &&
-        (verifEncadrement("NO", my_jeu, jetonToCreate, &currentJoueur) == false)
-    ){
-        isOk = false;
-    }
-    [old fin] */
-
     return isOk;
 }
 
+// vérification de si la case est jouable (emplacement ok et encadrement vérifié)
+bool isJouable(Jeu my_jeu, int col, int lig, Joueur currentJoueur) {
+    bool possible = false; 
+    Jeton temp;
+    initJeton(&temp, currentJoueur.idJoueur, col, lig);
 
-
-
-
+    if (emplacementOk(my_jeu, temp, &currentJoueur)) { // && VERIFENCADREMENT
+        possible = true;
+    }
+    return possible;
+}
 
 /* =================== JEU ================== */
 
@@ -668,57 +605,72 @@ int main() {
         // affichage infos joueur courant
         displayCurrentJoueur(my_jeu, *currentJoueur);
 
-        // A FAIRE : Mettre ici l'affichage de toutes les cases jouables par le joueur courant (cf jalon 3)
-
-        // Demande d'un jeton
-        string caseToPlay = askCase(&my_jeu, *currentJoueur);
-
-        // récupération des coordonnées demandées + conversion des char en int
-        int ligneToPlay = atoi(&caseToPlay[1]);
-        int colonneToPlay = charToInt(caseToPlay[0]);
-
-        // création et initialisation du jeton entré par le joueur
-        Jeton jetonToCreate;
-        initJeton(&jetonToCreate, currentJoueur->idJoueur, colonneToPlay, ligneToPlay);
-
-        // si les conditions sont réunies, on le place dans la grille
-        if(emplacementOk(my_jeu, jetonToCreate, currentJoueur) &&
-            ((verifEncadrement("SE", my_jeu, jetonToCreate, currentJoueur)) ||
-            (verifEncadrement("E", my_jeu, jetonToCreate, currentJoueur)) ||
-            (verifEncadrement("NE", my_jeu, jetonToCreate, currentJoueur)) ||
-            (verifEncadrement("S", my_jeu, jetonToCreate, currentJoueur)) ||
-            (verifEncadrement("N", my_jeu, jetonToCreate, currentJoueur)) ||
-            (verifEncadrement("SO", my_jeu, jetonToCreate, currentJoueur)) ||
-            (verifEncadrement("O", my_jeu, jetonToCreate, currentJoueur)) ||
-            (verifEncadrement("NO", my_jeu, jetonToCreate, currentJoueur)))
-        ){
-            #ifdef WIN32
-                SetConsoleOutputCP(65001);
-            #endif
-            cout << "Le jeton peut donc être joué. Il est joué :" << endl;
-            addJeton(&my_jeu, &jetonToCreate);
+        // Assistance - affichage des cases jouables 
+        cout << "Cases jouables :";
+        int countCaseJouable=0;
+        int nbJoueurPouvantJouer =2;
+        for (int lig = 1; lig<9; lig++) {
+            char colChar = 'A';
+            for (int col = 1; col<9; col++) {
+                if (isJouable(my_jeu, col, lig, *currentJoueur)) {
+                   cout << " " << colChar << lig;
+                   countCaseJouable++;
+                } 
+                colChar++;
+            }
         }
+        cout << ".\n";
 
-        // si les conditions ne sont pas réunies, on propose au joueur d'indiquer à nouveau une case (fonctionnalité temporairement retirée)
-        /*else{
-            cout << "Vous ne pouvez pas placer votre pion sur cette case. Essayez-en une autre." << endl ;
-            goto debut;
+        if (countCaseJouable != 0) {
+            // Demande d'un jeton
+            string caseToPlay = askCase(&my_jeu, *currentJoueur);
+
+            // récupération des coordonnées demandées + conversion des char en int
+            int ligneToPlay = atoi(&caseToPlay[1]);
+            int colonneToPlay = charToInt(caseToPlay[0]);
+
+            // création et initialisation du jeton entré par le joueur
+            Jeton jetonToCreate;
+            initJeton(&jetonToCreate, currentJoueur->idJoueur, colonneToPlay, ligneToPlay);
+
+            // si les conditions sont réunies, on le place dans la grille
+            if(isJouable(my_jeu, colonneToPlay, ligneToPlay, *currentJoueur)){
+                #ifdef WIN32
+                    SetConsoleOutputCP(65001);
+                #endif
+                cout << "Le jeton peut donc être joué. Il est joué :" << endl;
+                addJeton(&my_jeu, &jetonToCreate);
+            }
+               
+            else {
+                cout << "Coup impossible." << endl;
+                // si les conditions ne sont pas réunies, on propose au joueur d'indiquer à nouveau une case (fonctionnalité temporairement retirée)
+                /*else{
+                    cout << "Vous ne pouvez pas placer votre pion sur cette case. Essayez-en une autre." << endl ;
+                    goto debut;
+                }
+                [old fin] */
+            }
+
+
+            // on affiche de nouveau la grille pour vérifier
+            afficheGrille(my_jeu);
         }
-        [old fin] */
-
-        // on affiche de nouveau la grille pour vérifier
-        afficheGrille(my_jeu);
-
+        else {
+            nbJoueurPouvantJouer--;
+        }
         // changement de joueur
         currentJoueur = alterneJoueur(currentJoueur, &joueur1, &joueur2);
-
     }
 
     // Annonce du vainqueur de la partie
     if(joueur1.nbJetons > joueur2.nbJetons){
         cout << joueur1.nom << " a gagné !" << endl;
     }
-    else{
+    else if (joueur1.nbJetons > joueur2.nbJetons){
         cout << joueur2.nom << " a gagné !" << endl;
+    }
+    else {
+        cout << "Egalité." << endl;
     }
 }
