@@ -200,12 +200,14 @@ bool verifEncadrement(string direction, Jeu my_jeu, Jeton jetonToCreate, Joueur 
 
     int otherid = otherJoueur(currentJoueur->idJoueur);
 
+    // pb : le contrôle ne rentre jms dans les if(direction == "DIRECTION")
+
     // Cas S-E :
     if(direction == "SE"){
 
         bool encadrementSE = false ;
 
-        if((my_jeu.tab[trueColonne + 1][trueLigne + 1]->idJoueur == otherid)){ // S-E
+        if((my_jeu.tab[trueColonne + 1][trueLigne + 1]) && (my_jeu.tab[trueColonne + 1][trueLigne + 1]->idJoueur == otherid)){ // S-E
         // Recherche d'un éventuel jeton de la couleur du joueur courant dans la direction :
             for (int i = trueLigne + 1 ; i < 9 ; i++){ // on parcourt les lignes
                 for(int j = trueColonne + 1 ; j < 9 ; j++){ // on parcourt les colonnes
@@ -223,8 +225,10 @@ bool verifEncadrement(string direction, Jeu my_jeu, Jeton jetonToCreate, Joueur 
                         }
                         cout << "Vous encadrez un ou plusieurs pions vers le sud-est." << endl ;
                         // [old] break;
+                        return true; // FONCTIONNE
                     }
-                    return encadrementSE;
+                    // return encadrementSE;
+                    //return false;
                 }
             }
         }
@@ -235,9 +239,11 @@ bool verifEncadrement(string direction, Jeu my_jeu, Jeton jetonToCreate, Joueur 
 
         bool encadrementE = false ;
 
-        if((my_jeu.tab[trueColonne + 1][trueLigne]->idJoueur == otherid)){ // E
+        if((my_jeu.tab[trueColonne + 1][trueLigne]) && (my_jeu.tab[trueColonne + 1][trueLigne]->idJoueur == otherid)){ // E
+        cout << "le controle est entre dans le if(case existe et est adverse)" << endl; // DÉBUG
         // Recherche d'un éventuel jeton de la couleur du joueur courant dans la direction :
             for(int j = trueColonne + 1 ; j < 9 ; j++){ // on parcourt les colonnes
+            cout << "Le controle parcourt les colonnes" << endl ; // DÉBUG
                 if(my_jeu.tab[j][trueLigne]->idJoueur == currentJoueur->idJoueur){
                     encadrementE = true;
                     int jlim = j; // on récupère les coordonnées du jeton encadrant
@@ -248,9 +254,12 @@ bool verifEncadrement(string direction, Jeu my_jeu, Jeton jetonToCreate, Joueur 
                     }
                     cout << "Vous encadrez un ou plusieurs pions vers l'est." << endl ;
                     // [old] break;
+                    return true; // FONCTIONNE
                 }
-                return encadrementE;
+                // return encadrementE; // ORIGINAL
+                //return false;
             }
+            // return true; // marche presque
         }
     }
 
@@ -259,7 +268,7 @@ bool verifEncadrement(string direction, Jeu my_jeu, Jeton jetonToCreate, Joueur 
 
         bool encadrementNE = false ;
 
-        if((my_jeu.tab[trueColonne + 1][trueLigne - 1]->idJoueur == otherid)){ // N-E
+        if((my_jeu.tab[trueColonne + 1][trueLigne - 1]) && (my_jeu.tab[trueColonne + 1][trueLigne - 1]->idJoueur == otherid)){ // N-E
         // Recherche d'un éventuel jeton de la couleur du joueur courant dans la direction :
             for (int i = trueLigne - 1 ; i > -1 ; i--){ // on parcourt les lignes
                 for(int j = trueColonne + 1 ; j < 9 ; j++){ // on parcourt les colonnes
@@ -277,8 +286,10 @@ bool verifEncadrement(string direction, Jeu my_jeu, Jeton jetonToCreate, Joueur 
                         }
                         cout << "Vous encadrez un ou plusieurs pions vers le nord-est." << endl ;
                         // [old] break;
+                        return true; // FONCTIONNE
                     }
-                    return encadrementNE;
+                    // return encadrementNE;
+                    //return false;
                 }
             }
         }
@@ -289,7 +300,7 @@ bool verifEncadrement(string direction, Jeu my_jeu, Jeton jetonToCreate, Joueur 
 
         bool encadrementS = false ;
 
-        if((my_jeu.tab[trueColonne][trueLigne + 1]->idJoueur == otherid)){ // S
+        if((my_jeu.tab[trueColonne][trueLigne + 1]) && (my_jeu.tab[trueColonne][trueLigne + 1]->idJoueur == otherid)){ // S
         // Recherche d'un éventuel jeton de la couleur du joueur courant dans la direction :
             for(int i = trueLigne + 1 ; i < 9 ; i++){ // on parcourt les colonnes
                 if(my_jeu.tab[trueColonne][i]->idJoueur == currentJoueur->idJoueur){
@@ -302,8 +313,10 @@ bool verifEncadrement(string direction, Jeu my_jeu, Jeton jetonToCreate, Joueur 
                     }
                     cout << "Vous encadrez un ou plusieurs pions vers le sud." << endl ;
                     // [old] break;
+                    return true; // FONCTIONNE
                 }
-                return encadrementS;
+                // return encadrementS;
+                //return false;
             }
         }
     }
@@ -313,21 +326,23 @@ bool verifEncadrement(string direction, Jeu my_jeu, Jeton jetonToCreate, Joueur 
 
         bool encadrementN = false ;
 
-        if((my_jeu.tab[trueColonne][trueLigne - 1]->idJoueur == otherid)){ // N
+        if((my_jeu.tab[trueColonne][trueLigne - 1]) && (my_jeu.tab[trueColonne][trueLigne - 1]->idJoueur == otherid)){ // N
         // Recherche d'un éventuel jeton de la couleur du joueur courant dans la direction :
             for(int i = trueLigne - 1 ; i > -1 ; i--){ // on parcourt les colonnes
                 if(my_jeu.tab[trueColonne][i]->idJoueur == currentJoueur->idJoueur){
                     encadrementN = true;
                     int ilim = i; // on récupère les coordonnées du jeton encadrant
                     // on reprend la même boucle pour retourner les jetons :
-                    for(int i = trueLigne - 1 ; i > ilim-1 ; i--){
+                    for(int i = trueLigne - 1 ; i > ilim-1 ; i--){ // ILIM AU LIEU DE ILIM-1 ?
                         my_jeu.tab[trueColonne][i]->idJoueur = currentJoueur->idJoueur; // retournement des jetons
                         currentJoueur->nbJetons ++ ; // incrémentation du nb de jetons du joueur courant
                     }
                     cout << "Vous encadrez un ou plusieurs pions vers le nord." << endl ;
                     // [old] break;
+                    return true; // FONCTIONNE
                 }
-                return encadrementN;
+                // return encadrementN;
+                //return false;
             }
         }
     }
@@ -337,7 +352,7 @@ bool verifEncadrement(string direction, Jeu my_jeu, Jeton jetonToCreate, Joueur 
 
         bool encadrementSO = false ;
 
-        if((my_jeu.tab[trueColonne - 1][trueLigne + 1]->idJoueur == otherid)){ // S-O
+        if((my_jeu.tab[trueColonne - 1][trueLigne + 1]) && (my_jeu.tab[trueColonne - 1][trueLigne + 1]->idJoueur == otherid)){ // S-O
         // Recherche d'un éventuel jeton de la couleur du joueur courant dans la direction :
             for (int i = trueLigne + 1 ; i < 9 ; i++){ // on parcourt les lignes
                 for(int j = trueColonne - 1 ; j > -1 ; j--){ // on parcourt les colonnes
@@ -355,8 +370,10 @@ bool verifEncadrement(string direction, Jeu my_jeu, Jeton jetonToCreate, Joueur 
                         }
                         cout << "Vous encadrez un ou plusieurs pions vers le sud-ouest." << endl ;
                         // [old] break;
+                        return true; // FONCTIONNE
                     }
-                    return encadrementSO;
+                    // return encadrementSO;
+                    //return false;
                 }
             }
         }
@@ -367,7 +384,7 @@ bool verifEncadrement(string direction, Jeu my_jeu, Jeton jetonToCreate, Joueur 
 
         bool encadrementO = false ;
 
-        if((my_jeu.tab[trueColonne - 1][trueLigne]->idJoueur == otherid)){ // O
+        if((my_jeu.tab[trueColonne - 1][trueLigne]) && (my_jeu.tab[trueColonne - 1][trueLigne]->idJoueur == otherid)){ // O
         // Recherche d'un éventuel jeton de la couleur du joueur courant dans la direction :
             for(int j = trueColonne - 1 ; j > -1 ; j--){ // on parcourt les colonnes
                 if(my_jeu.tab[j][trueLigne]->idJoueur == currentJoueur->idJoueur){
@@ -376,12 +393,15 @@ bool verifEncadrement(string direction, Jeu my_jeu, Jeton jetonToCreate, Joueur 
                     // on reprend la même boucle pour retourner les jetons :
                     for(int j = trueColonne - 1 ; j > jlim-1 ; j--){
                         my_jeu.tab[j][trueLigne]->idJoueur = currentJoueur->idJoueur; // retournement des jetons
+                        // my_jeu.tab[j][trueLigne]->idJoueur = 1; // DÉBUG
                         currentJoueur->nbJetons ++ ; // incrémentation du nb de jetons du joueur courant
                     }
                     cout << "Vous encadrez un ou plusieurs pions vers l'ouest." << endl ;
                     // [old] break;
+                    return true; // FONCTIONNE
                 }
-                return encadrementO;
+                // return encadrementO;
+                //return false;
             }
         }
     }
@@ -391,7 +411,7 @@ bool verifEncadrement(string direction, Jeu my_jeu, Jeton jetonToCreate, Joueur 
 
         bool encadrementNO = false ;
 
-        if((my_jeu.tab[trueColonne - 1][trueLigne - 1]->idJoueur == otherid)){ // N-O
+        if((my_jeu.tab[trueColonne - 1][trueLigne - 1]) && (my_jeu.tab[trueColonne - 1][trueLigne - 1]->idJoueur == otherid)){ // N-O
         // Recherche d'un éventuel jeton de la couleur du joueur courant dans la direction :
             for (int i = trueLigne - 1 ; i > -1 ; i--){ // on parcourt les lignes
                 for(int j = trueColonne - 1 ; j > -1 ; j--){ // on parcourt les colonnes
@@ -409,14 +429,16 @@ bool verifEncadrement(string direction, Jeu my_jeu, Jeton jetonToCreate, Joueur 
                         }
                         cout << "Vous encadrez un ou plusieurs pions vers le nord-ouest." << endl ;
                         // [old] break;
+                        return true; // FONCTIONNE
                     }
-                    return encadrementNO;
+                    // return encadrementNO;
+                    //return false;
                 }
             }
         }
     }
 
-    return false;
+    return false; // pb : le contrôle arrive tjrs jusqu'ici
 
 }
 
@@ -681,8 +703,15 @@ int main() {
         Jeton jetonToCreate;
         initJeton(&jetonToCreate, currentJoueur->idJoueur, colonneToPlay, ligneToPlay);
 
+        // test tmp :
+        /*
+        if (verifEncadrement("E", my_jeu, jetonToCreate, currentJoueur) == true){cout << "verifEncadrement Est renvoie true" << endl;}
+        if (verifEncadrement("E", my_jeu, jetonToCreate, currentJoueur) == false){cout << "verifEncadrement Est renvoie false"<< endl;}
+        */
+
         // si les conditions sont réunies, on le place dans la grille
         if(emplacementOk(my_jeu, jetonToCreate, currentJoueur) &&
+            // problème : la proposition suivante est tjrs false
             ((verifEncadrement("SE", my_jeu, jetonToCreate, currentJoueur)) ||
             (verifEncadrement("E", my_jeu, jetonToCreate, currentJoueur)) ||
             (verifEncadrement("NE", my_jeu, jetonToCreate, currentJoueur)) ||
